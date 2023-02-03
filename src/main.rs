@@ -26,7 +26,7 @@ fn validate_word(master_hash: &LetterTally, check_word: &str) -> bool {
     true
 }
 
-pub fn main() {
+fn main() {
     print!("what is the scramble: ");
     stdout().flush().unwrap();
 
