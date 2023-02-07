@@ -56,5 +56,7 @@ pub fn main() {
         }
     }
     println!("the longest word is: {}", longest);
+    print!("press (ENTER) to exit.");
+    stdout().flush().unwrap();
     stdin().read_line(&mut String::new()).unwrap();
 }
