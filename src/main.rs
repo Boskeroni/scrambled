@@ -17,10 +17,11 @@ fn convert_to_hash(val: &str) -> LetterTally {
 fn validate_word(master_hash: &LetterTally, check_word: &str) -> bool {
     let mut check_hash = LetterTally::new();
     for c in check_word.chars().into_iter() {
-        // if the word contains a letter
+        // if the word contains a letter that the scramble, it is invalid
         if !master_hash.contains_key(&c) {
             return false
         }
+        // insert or update the check_hash and check if letters are invalid
         *check_hash.entry(c).or_insert(0) += 1;
         if check_hash.get(&c).unwrap() > master_hash.get(&c).unwrap() {
             return false
@@ -65,7 +66,7 @@ fn main() {
         }
     }
     
-    //output
+    //output the word
     println!("the longest word is: {}", longest);
     stdin().read_line(&mut String::new()).unwrap();
 }
