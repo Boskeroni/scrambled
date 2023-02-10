@@ -1,5 +1,7 @@
 use hashbrown::HashMap;
-use std::io::{BufRead, BufReader, stdin, stdout, Write};
+use std::cmp::Ordering;
+use std::env;
+use std::io::{BufRead, BufReader, Write};
 use std::fs::File;
 
 // contains each letter found in the word and how many times it shows up
@@ -30,11 +32,7 @@ fn validate_word(master_hash: &LetterTally, check_word: &str) -> bool {
 }
 
 fn main() {
-    print!("what is the scramble: ");
-    stdout().flush().unwrap();
-
-    let mut scramble = String::new();
-    stdin().read_line(&mut scramble).unwrap();
+    let mut scramble = env::args().nth(1).expect("scramble not given");
     scramble = scramble.trim().to_string();
     
     // just to disregard all the words longer than the scramble
@@ -43,13 +41,14 @@ fn main() {
     let file = BufReader::new(File::open("words.txt").unwrap());
 
     let mut longest = String::new();  
-    let mut len_longest = 0;  
+    let mut all_valid_words = Vec::new();
+
     for line in file.lines() {
         let trial_word = line.unwrap();
         let word_len = trial_word.len();
         
         // dont bother checking words shorter than the longest or longer than the scramble
-        if scramble_len < word_len || word_len < len_longest {
+        if scramble_len < word_len {
             continue;
         }
         if !validate_word(&input_hash, &trial_word) {
@@ -58,14 +57,46 @@ fn main() {
         
         // update the new longest word
         // if it equals the scramble then we have a max length
-        longest = trial_word;
-        len_longest = longest.len();
-        if len_longest == scramble_len {
+        longest = trial_word.clone();
+        all_valid_words.push(trial_word);
+        if longest.len() == scramble_len {
             break;
         }
     }
-    
-    //output
-    println!("the longest word is: {}", longest);
-    stdin().read_line(&mut String::new()).unwrap();
+    all_valid_words.sort_by(|a, b| {
+        if a.len() > b.len() {
+            Ordering::Less
+        }
+        else if a.len() == b.len() {
+            Ordering::Equal
+        }
+        else {
+            Ordering::Greater
+        }   
+    });
+
+    if let Some(response) = env::args().nth(2) {
+        match response.as_str() {
+            "--list" => {
+                for word in all_valid_words {
+                    println!("{}", word);
+                }
+            }
+            "--word" => {
+                println!("{}", longest);
+            }
+            "--file" => {
+                let file_path = env::args().nth(3).expect("file path not given");
+                let mut file = File::create(file_path).unwrap();
+                for word in all_valid_words {
+                    writeln!(file, "{}", word).unwrap();
+                }
+            }
+            _ => {
+                panic!("invalid response type");
+            }
+        }
+    } else {
+        println!("{}", longest);
+    }
 }
