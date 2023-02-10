@@ -103,20 +103,27 @@ fn get_multiple_words(
 }
 
 fn main() {
+    // goal is to handle all of the arguments passed in here
     let args = ScrambledArgs::parse();
+
+    // these variables are used in all cases
     let input_hash = convert_to_hash(&args.scramble); 
     let word_file = BufReader::new(File::open("words.txt").unwrap());
+    
+    // if none is provided then we want to print out singular word
     if let Some(response) = args.response_type {
-        
         match response {
             ResponseType::File(f) => {
+                // handles all of the max and mins already
                 let all_valid_words = get_multiple_words(&input_hash, f.max_output, f.min_length, word_file);
+                // replaces everything in the file
                 let mut file = File::create(f.file_path).unwrap();
                 for word in &all_valid_words {
                     writeln!(file, "{}", word).unwrap();
                 }
             }
             ResponseType::List(l) => {
+                // handles all of the max and mins already
                 let all_valid_words = get_multiple_words(&input_hash, l.max_output, l.min_length, word_file);
                 for word in &all_valid_words {
                     println!("{}", word);

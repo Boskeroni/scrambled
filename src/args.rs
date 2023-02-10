@@ -29,15 +29,19 @@ pub struct File {
     /// the file to output the words to
     pub file_path: String,
     #[arg(long = "output")]
+    /// the maximum number of words that it should output
     pub max_output: Option<i32>,
+    /// the minimum length of a word in order for it to be added
     #[arg(long = "min_length")]
     pub min_length: Option<i32>,
 }
 
 #[derive(Args, PartialEq)]
 pub struct List {
+    /// the maximum number of words that it should output
     #[arg(long = "output")]
     pub max_output: Option<i32>,
+    /// the minimum length of a word in order for it to be added
     #[arg(long = "min_length")]
     pub min_length: Option<i32>,
 }
